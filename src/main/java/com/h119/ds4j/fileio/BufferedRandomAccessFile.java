@@ -12,7 +12,7 @@ public class BufferedRandomAccessFile {
 	private final int bufferSize;
 	private char[] buffer;
 
-	private static final int DEFAULT_BUFFER_SIZE = 2 << 16;
+	private static final int DEFAULT_BUFFER_SIZE = 1 << 16;
 
 	public BufferedRandomAccessFile(String fileName, int bufferSize) {
 		this.fileName = fileName;
