@@ -51,6 +51,10 @@ public class BufferedRandomAccessFile {
 		}
 	}
 
+	public long getFileLength() {
+		return fileLength;
+	}
+
 	public boolean isIndexWithinBounds(long index) {
 		return index >= 0 && index <= fileLength;
 	}
