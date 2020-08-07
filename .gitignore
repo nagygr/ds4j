@@ -10,3 +10,6 @@ tags
 GPATH
 GRTAGS
 GTAGS
+
+# Notes PDF output
+notes/notes.pdf

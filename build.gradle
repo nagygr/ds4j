@@ -56,6 +56,14 @@ distributions {
 			from 'settings.gradle'
 			from 'gradlew'
 			from 'gradlew.bat'
+			from 'notes/notes.md'
 		}
 	}
+}
+
+task compileNotes(type: Exec) {
+    workingDir 'notes'
+    commandLine 'pandoc', 'notes.md', '-s', '-o', 'notes.pdf'
+	inputs.files 'notes.md'
+	outputs.files 'notes.pdf'
 }
