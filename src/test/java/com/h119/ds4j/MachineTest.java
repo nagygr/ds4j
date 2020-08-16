@@ -6,6 +6,9 @@ import static org.junit.Assert.*;
 public class MachineTest {
     @Test public void testReturnOne() {
         Machine classUnderTest = new Machine();
-        assertTrue("returnOne should return one", classUnderTest.returnOne() == 1);
+        assertTrue (
+			"The program of a freshly created Machine should be empty",
+			classUnderTest.isProgramEmpty()
+		);
     }
 }

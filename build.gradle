@@ -9,10 +9,12 @@ repositories {
 }
 
 dependencies {
-	implementation 'com.google.guava:guava:29.0-jre'
-
+	// JUnit Test Framework
 	testImplementation 'junit:junit:4.13'
-	implementation group: 'net.sf.trove4j', name: 'trove4j', version: '3.0.3'
+
+	// Eclipse Collections:
+	implementation 'org.eclipse.collections:eclipse-collections-api:10.3.0'
+	implementation 'org.eclipse.collections:eclipse-collections:10.3.0'
 }
 
 task makeJar(type: Jar) { manifest {} }
