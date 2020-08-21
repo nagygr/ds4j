@@ -60,11 +60,16 @@ public class BufferedRandomAccessFile {
 	}
 
 	public char get(long index) {
+		/*
+		 * TODO: if index is out of bounds and the it within a neighbouring
+		 * buffer, then there should be an overlap between the current
+		 * buffer and the newly read one.
+		 */
 		if (index < position || index >= (position + bufferSize)) {
 			position = (index / bufferSize) * bufferSize;
 			readBuffer(buffer, position);
 		}
 
-		return buffer[(int)(index % bufferSize)];
+		return buffer[(int)(index - position)];
 	}
 }
