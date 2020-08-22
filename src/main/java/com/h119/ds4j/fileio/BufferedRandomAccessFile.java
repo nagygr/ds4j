@@ -59,13 +59,17 @@ public class BufferedRandomAccessFile {
 		return index >= 0 && index <= fileLength;
 	}
 
+	private boolean isIndexWithinBuffer(long index) {
+		return index >= position && index < (position + bufferSize);
+	}
+
 	public char get(long index) {
 		/*
-		 * TODO: if index is out of bounds and the it within a neighbouring
+		 * TODO: if index is out of bounds and it indexes an adjacent
 		 * buffer, then there should be an overlap between the current
 		 * buffer and the newly read one.
 		 */
-		if (index < position || index >= (position + bufferSize)) {
+		if (!isIndexWithinBuffer(index)) {
 			position = (index / bufferSize) * bufferSize;
 			readBuffer(buffer, position);
 		}
