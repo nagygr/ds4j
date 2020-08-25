@@ -56,7 +56,7 @@ public class BufferedRandomAccessFile {
 	}
 
 	public boolean isIndexWithinBounds(long index) {
-		return index >= 0 && index <= fileLength;
+		return index >= 0 && index < fileLength;
 	}
 
 	private boolean isIndexWithinBuffer(long index) {
