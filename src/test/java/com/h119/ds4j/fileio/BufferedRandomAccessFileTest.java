@@ -18,7 +18,7 @@ public class BufferedRandomAccessFileTest {
 	@Test
 	public void testAccents() {
 		BufferedRandomAccessFile classUnderTest = new BufferedRandomAccessFile(
-			"test_data/test.txt",
+			"src/test/resources/test.txt",
 			10
 		);
 
