@@ -5,12 +5,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import java.util.Optional;
+
 public class BufferedRandomAccessFile {
 	private final String fileName;
-	private long position;
-	private long fileLength;
+	private int position;
 	private final int bufferSize;
 	private char[] buffer;
+	private Optional<Integer> fileLength;
 
 	private static final int DEFAULT_BUFFER_SIZE = 1 << 16;
 
@@ -19,7 +21,8 @@ public class BufferedRandomAccessFile {
 		position = 0;
 		this.bufferSize = bufferSize;
 		buffer = new char[bufferSize];
-		fileLength = new File(fileName).length();
+		
+		fileLength = Optional.<Integer>empty();
 
 		readBuffer(buffer, position);
 	}
@@ -28,42 +31,37 @@ public class BufferedRandomAccessFile {
 		this(fileName, DEFAULT_BUFFER_SIZE);
 	}
 
-	private void readBuffer(char[] buf, long from) {
+	private void readBuffer(char[] buf, int from) {
 		try (
 			BufferedReader reader = new BufferedReader(new FileReader(fileName), buf.length);
 		)
 		{
-			if (!isIndexWithinBounds(from))
-				throw new AssertionError(String.format(
-					"Index out of bounds: %d", from
-			));
-
 			reader.skip(from);
-			long charsRead = reader.read(buf);
+			int charsRead = reader.read(buf);
 			
-			if (charsRead == -1)
-				throw new AssertionError(String.format(
+			if (charsRead == -1) {
+				throw new IndexOutOfBoundsException(String.format(
 					"Index out of bounds (charsRead == -1): %d", from
 				));
+			}
+			else if (charsRead < bufferSize) {
+				fileLength = Optional.<Integer>of(from + charsRead);
+			}
 		}
 		catch (IOException ioe) {
 			throw new AssertionError(String.format("Error while reading the file: %s", ioe));
 		}
 	}
 
-	public long getFileLength() {
+	public final Optional<Integer> getFileLength() {
 		return fileLength;
 	}
 
-	public boolean isIndexWithinBounds(long index) {
-		return index >= 0 && index < fileLength;
-	}
-
-	private boolean isIndexWithinBuffer(long index) {
+	private boolean isIndexWithinBuffer(int index) {
 		return index >= position && index < (position + bufferSize);
 	}
 
-	public char get(long index) {
+	public char get(int index) {
 		/*
 		 * TODO: if index is out of bounds and it indexes an adjacent
 		 * buffer, then there should be an overlap between the current
@@ -73,6 +71,15 @@ public class BufferedRandomAccessFile {
 			position = (index / bufferSize) * bufferSize;
 			readBuffer(buffer, position);
 		}
+
+		if (fileLength.isPresent() && index >= fileLength.get())
+			throw new IndexOutOfBoundsException(
+				String.format(
+					"Index out of bounds: %d (file size: %d)",
+					index,
+					fileLength.get()
+				)
+			);
 
 		return buffer[(int)(index - position)];
 	}
