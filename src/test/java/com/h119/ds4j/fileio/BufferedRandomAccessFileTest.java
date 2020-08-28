@@ -33,25 +33,30 @@ public class BufferedRandomAccessFileTest {
 			10
 		);
 
-		int length = classUnderTest.getFileLength().orElse(-1);
-		System.out.format("The length of the file: %d\n", length);
-
 		boolean eofReached = false;
-		int i = 0;
 
-		do {
-			length = classUnderTest.getFileLength().orElse(-1);
-
-			if (length == -1 || i < length) {
+		for (int i = 0; !eofReached; ++i) {
+			try {
 				System.out.print(classUnderTest.get(i));
-				++i;
 			}
-			else eofReached = true;
-		} while (!eofReached);
+			catch (IndexOutOfBoundsException ioobe) {
+				eofReached = true;
+			}
+		}
 
 		System.out.println();
 
-		assertTrue("The should have been scanned until its end", eofReached);
+		assertTrue("The file should have been scanned until its end", eofReached);
+	}
+
+	@Test(expected = IndexOutOfBoundsException.class)
+	public void testTooBigIndex() {
+		BufferedRandomAccessFile classUnderTest = new BufferedRandomAccessFile(
+			"src/test/resources/test.txt",
+			50
+		);
+
+		char c = classUnderTest.get(46);
 	}
 }
 

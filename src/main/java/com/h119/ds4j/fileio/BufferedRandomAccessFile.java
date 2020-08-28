@@ -53,33 +53,38 @@ public class BufferedRandomAccessFile {
 		}
 	}
 
-	public final Optional<Integer> getFileLength() {
-		return fileLength;
-	}
-
 	private boolean isIndexWithinBuffer(int index) {
 		return index >= position && index < (position + bufferSize);
 	}
 
 	public char get(int index) {
-		/*
-		 * TODO: if index is out of bounds and it indexes an adjacent
-		 * buffer, then there should be an overlap between the current
-		 * buffer and the newly read one.
-		 */
 		if (!isIndexWithinBuffer(index)) {
-			position = (index / bufferSize) * bufferSize;
+			if (index >= position + bufferSize && index < position + (int)(1.9 * bufferSize)) {
+				position = position + (int)(0.9 * bufferSize);
+			}
+			else if (index < position && index >= position - (int)(0.9 * bufferSize)) {
+				position = Math.max(0, position - (int)(0.9 * bufferSize));
+			}
+			else {
+				position = (index / bufferSize) * bufferSize;
+			}
+
 			readBuffer(buffer, position);
 		}
 
-		if (fileLength.isPresent() && index >= fileLength.get())
-			throw new IndexOutOfBoundsException(
-				String.format(
-					"Index out of bounds: %d (file size: %d)",
-					index,
-					fileLength.get()
-				)
-			);
+		fileLength.ifPresent(
+			length -> {
+				if (index >= length) {
+					throw new IndexOutOfBoundsException(
+						String.format(
+							"Index out of bounds: %d (file size: %d)",
+							index,
+							length
+						)
+					);
+				}
+			}
+		);
 
 		return buffer[(int)(index - position)];
 	}
