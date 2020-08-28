@@ -5,14 +5,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
-import java.util.Optional;
-
 public class BufferedRandomAccessFile {
 	private final String fileName;
 	private int position;
 	private final int bufferSize;
 	private char[] buffer;
-	private Optional<Integer> fileLength;
+	private int fileLength;
 
 	private static final int DEFAULT_BUFFER_SIZE = 1 << 16;
 
@@ -22,7 +20,7 @@ public class BufferedRandomAccessFile {
 		this.bufferSize = bufferSize;
 		buffer = new char[bufferSize];
 		
-		fileLength = Optional.<Integer>empty();
+		fileLength = -1;
 
 		readBuffer(buffer, position);
 	}
@@ -45,7 +43,7 @@ public class BufferedRandomAccessFile {
 				));
 			}
 			else if (charsRead < bufferSize) {
-				fileLength = Optional.<Integer>of(from + charsRead);
+				fileLength = from + charsRead;
 			}
 		}
 		catch (IOException ioe) {
@@ -72,19 +70,15 @@ public class BufferedRandomAccessFile {
 			readBuffer(buffer, position);
 		}
 
-		fileLength.ifPresent(
-			length -> {
-				if (index >= length) {
-					throw new IndexOutOfBoundsException(
-						String.format(
-							"Index out of bounds: %d (file size: %d)",
-							index,
-							length
-						)
-					);
-				}
-			}
-		);
+		if (fileLength != -1 && index >= fileLength) {
+			throw new IndexOutOfBoundsException(
+				String.format(
+					"Index out of bounds: %d (file size: %d)",
+					index,
+					fileLength
+				)
+			);
+		}
 
 		return buffer[(int)(index - position)];
 	}
