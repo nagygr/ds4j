@@ -13,6 +13,9 @@ public class Machine {
 	public static final int JMP = 1;
 	public static final int PUSH = 2;
 
+	public static final int FAILURE = 0;
+	public static final int SUCCESS = 1;
+
 	private IntArrayStack stack;
 	private IntArrayList program;
 
@@ -80,6 +83,10 @@ public class Machine {
 		return program.get(instructionPointer);
 	}
 
+	public char getCharacter(int index) {
+		return file.get(index);
+	}
+
 	public boolean isProgramEmpty() {
 		return program.isEmpty();
 	}
@@ -128,6 +135,10 @@ public class Machine {
 		}
 
 		return newIndex;
+	}
+
+	public String getString(int index) {
+		return stringTable.get(index);
 	}
 
 	public void run() {
