@@ -7,6 +7,18 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 import com.h119.ds4j.fileio.BufferedRandomAccessFile;
 
 public class Machine {
+	public static class FarthestError {
+		public int position;
+		public int commandId;
+		public int ruleIndex;
+
+		public FarthestError() {
+			position = -1;
+			commandId = -1;
+			ruleIndex = -1;
+		}
+	}
+
 	public static final int END_OF_PROGRAM = -1;
 
 	public static final int CHAR = 0;
@@ -19,11 +31,18 @@ public class Machine {
 	private IntArrayStack stack;
 	private IntArrayList program;
 
-	private int instructionPointer;
+	private FarthestError farthestError;
 
-	private int farthestErrorPosition;
-	private String farthestErrorCause;
-	private String farthestErrorRule;
+	/**
+	 * The stack for the rule name indices.
+	 * Whenever a rule starts, it pushes its name
+	 * index, and whenever it finishes, it pops it.
+	 * The terminal rules can use this information for
+	 * the failure information.
+	 */
+	private IntArrayStack ruleNameStack;
+
+	private int instructionPointer;
 
 	private FastList<String> stringTable;
 
@@ -31,16 +50,25 @@ public class Machine {
 
 	public Machine() {
 		stack = new IntArrayStack();
+
 		program = new IntArrayList();
 		instructionPointer = 0;
 
-		farthestErrorPosition = -1;
-		farthestErrorCause = "";
-		farthestErrorRule = "";
+		farthestError = new FarthestError();
+
+		ruleNameStack = new IntArrayStack();
 
 		stringTable = new FastList<>(20);
 
 		file = null;
+	}
+
+	public void setError(int position, int commandId, int ruleIndex) {
+		if (position > farthestError.position) {
+			farthestError.position = position;
+			farthestError.commandId = commandId;
+			farthestError.ruleIndex = ruleIndex;
+		}
 	}
 
 	public void setFile(BufferedRandomAccessFile file) {
@@ -65,6 +93,10 @@ public class Machine {
 
 	public void setInstructionPointer(int value) {
 		instructionPointer = value;
+	}
+
+	public void incrementInstructionPointerBy(int value) {
+		instructionPointer += value;
 	}
 
 	public int getProgramLength() {
@@ -167,7 +199,7 @@ public class Machine {
 				case JMP:
 				{
 					int argument = program.get(instructionPointer + 1);
-					instructionPointer = argument - 1; // -1: beacuse IP gets incremented
+					instructionPointer = argument;
 				}
 				break;
 
@@ -175,11 +207,10 @@ public class Machine {
 				{
 					int argument = program.get(instructionPointer + 1);
 					stack.push(argument);
+					instructionPointer += 1;
 				}
 				break;
 			}
-
-			instructionPointer += 1;
 		}
 	}
 

@@ -1,10 +1,17 @@
 package com.h119.ds4j;
 
 public class Character {
+	/**
+	 * Realizes the machine instruction: CHAR.
+	 * Takes the characterSet's index in the string table as
+	 * argument and the current position from the stack.
+	 * @param machine the machine
+	 */
 	public static void instruction(Machine machine) {
-		int returnAddress = machine.popStack();
+		machine.incrementInstructionPointerBy(1);
+		int characterSetIndex = machine.getInstruction();
+
 		int position = machine.popStack();
-		int characterSetIndex = machine.popStack();
 
 		String characterSet = machine.getString(characterSetIndex);
 
@@ -17,6 +24,6 @@ public class Character {
 			machine.pushStack(Machine.FAILURE);
 		}
 
-		machine.setInstructionPointer(returnAddress);
+		machine.incrementInstructionPointerBy(1);
 	}
 }
