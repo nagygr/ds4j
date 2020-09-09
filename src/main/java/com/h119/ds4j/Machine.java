@@ -7,7 +7,7 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 import com.h119.ds4j.fileio.BufferedRandomAccessFile;
 
 public class Machine {
-	public static class FarthestError {
+	public static final class FarthestError {
 		public int position;
 		public int commandId;
 		public int ruleIndex;
@@ -51,14 +51,14 @@ public class Machine {
 	public Machine() {
 		stack = new IntArrayStack();
 
-		program = new IntArrayList();
+		program = new IntArrayList(100);
 		instructionPointer = 0;
 
 		farthestError = new FarthestError();
 
 		ruleNameStack = new IntArrayStack();
 
-		stringTable = new FastList<>(20);
+		stringTable = new FastList<>(50);
 
 		file = null;
 	}
