@@ -9,10 +9,10 @@ public final class Character implements Compilable {
 
 	@Override
 	public void compile(Machine machine) {
-		int stringIndex = machine.addString(characterSet);
+		int characterSetIndex = machine.addString(characterSet);
 
 		machine.addInstruction(Machine.CHAR);
-		machine.addInstruction(stringIndex);
+		machine.addInstruction(characterSetIndex);
 	}
 
 	/**

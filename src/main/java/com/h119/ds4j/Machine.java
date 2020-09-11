@@ -24,6 +24,10 @@ public class Machine {
 	public static final int CHAR = 0;
 	public static final int JMP = 1;
 	public static final int PUSH = 2;
+	public static final int POP = 3;
+	public static final int PEEK = 4;
+	public static final int PUR = 5; // PUsh Rule name to ruleNameStack
+	public static final int POR = 6; // POp Rule name from ruleNameStack
 
 	public static final int FAILURE = 0;
 	public static final int SUCCESS = 1;
@@ -45,6 +49,8 @@ public class Machine {
 	private int instructionPointer;
 
 	private FastList<String> stringTable;
+	
+	private IntArrayList registers;
 
 	private BufferedRandomAccessFile file = null;
 
@@ -61,6 +67,8 @@ public class Machine {
 		ruleNameStack = new IntArrayStack();
 
 		stringTable = new FastList<>(50);
+
+		registers = new IntArrayList(10);
 	}
 
 	public void setError(int position, int commandId, int ruleIndex) {
@@ -214,9 +222,37 @@ public class Machine {
 				{
 					int argument = program.get(instructionPointer + 1);
 					stack.push(argument);
+					instructionPointer += 2;
+				}
+				break;
+
+				case POP:
+				{
+					stack.pop();
 					instructionPointer += 1;
 				}
 				break;
+
+				case PEEK:
+				{
+					int peekIndex = program.get(instructionPointer + 1);
+					int register = program.get(instructionPointer + 2);
+					registers.set(register, stack.peekAt(peekIndex));
+					instructionPointer += 3;
+				}
+				break;
+
+				case PUR:
+				{
+					int argument = program.get(instructionPointer + 1);
+					ruleNameStack.push(argument);
+					instructionPointer += 2;
+				}
+				break;
+
+				case POR:
+					ruleNameStack.pop();
+					instructionPointer += 1;
 			}
 		}
 	}
