@@ -26,8 +26,9 @@ public class Machine {
 	public static final int PUSH = 2;
 	public static final int POP = 3;
 	public static final int PEEK = 4;
-	public static final int PUR = 5; // PUsh Rule name to ruleNameStack
-	public static final int POR = 6; // POp Rule name from ruleNameStack
+	public static final int PRS = 5; // Push Register to Stack
+	public static final int PUR = 6; // PUsh Rule name to ruleNameStack
+	public static final int POR = 7; // POp Rule name from ruleNameStack
 
 	public static final int FAILURE = 0;
 	public static final int SUCCESS = 1;
@@ -239,6 +240,14 @@ public class Machine {
 					int register = program.get(instructionPointer + 2);
 					registers.set(register, stack.peekAt(peekIndex));
 					instructionPointer += 3;
+				}
+				break;
+
+				case PRS:
+				{
+					int registerIndex = program.get(instructionPointer + 1);
+					stack.push(registers.get(registerIndex);
+					instructionPointer += 2;
 				}
 				break;
 
