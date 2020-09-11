@@ -1,6 +1,6 @@
 package com.h119.ds4j;
 
-public class final Character implements Compilable {
+public final class Character implements Compilable {
 	private String characterSet;
 
 	public Character(String characterSet) {
@@ -34,7 +34,7 @@ public class final Character implements Compilable {
 			machine.pushStack(Machine.SUCCESS);
 		}
 		else {
-			machine.setError(position, Machine.CHAR, Machine.getCurrentRuleNameIndex());
+			machine.setError(position, Machine.CHAR, machine.getCurrentRuleNameIndex());
 			machine.pushStack(position);
 			machine.pushStack(Machine.FAILURE);
 		}
