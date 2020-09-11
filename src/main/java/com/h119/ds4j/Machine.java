@@ -46,7 +46,9 @@ public class Machine {
 
 	private FastList<String> stringTable;
 
-	private BufferedRandomAccessFile file;
+	private BufferedRandomAccessFile file = null;
+
+	private boolean endOfProgramReached = false;
 
 	public Machine() {
 		stack = new IntArrayStack();
@@ -59,8 +61,6 @@ public class Machine {
 		ruleNameStack = new IntArrayStack();
 
 		stringTable = new FastList<>(50);
-
-		file = null;
 	}
 
 	public void setError(int position, int commandId, int ruleIndex) {
@@ -73,6 +73,10 @@ public class Machine {
 
 	public void setFile(BufferedRandomAccessFile file) {
 		this.file = file;
+	}
+
+	public void setEndOfProgramReached() {
+		endOfProgramReached = true;
 	}
 
 	/**
@@ -173,10 +177,14 @@ public class Machine {
 		return stringTable.get(index);
 	}
 
+	public int getCurrentRuleNameIndex() {
+		return ruleNameStack.peek();
+	}
+
 	public void run() {
 		if (file == null) {
 			throw new RuntimeException (
-				"THe file is null, the machine can not run without a file."
+				"The file is null, the machine can not run without a file."
 			);
 		}
 
@@ -185,10 +193,9 @@ public class Machine {
 		stack.push(0); // the start position
 
 		instructionPointer = 0;
+		endOfProgramReached = false;
 
-		boolean eopReached = false;
-
-		while (!eopReached) {
+		while (!endOfProgramReached) {
 			int instruction = program.get(instructionPointer);
 
 			switch(instruction) {
