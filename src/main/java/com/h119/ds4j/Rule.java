@@ -54,11 +54,21 @@ public final class Rule implements Compilable {
 		 *					rule name index -> rule index in program
 		 *			-> the second one will also be map:
 		 *					rule name index -> position of branch command's argument
+		 *					(the addInstrucion() method returns the command index)
 		 *			=> in the second run we will iterate over the second and:
 		 *					program.set	(
 		 *						position of branch command's argument,
 		 *						rule index in program
 		 *					);
+		 *
+		 * Compile() will become a recursive method as the compilation of the first
+		 * (starting rule) must invoke the compilation of all the rules. It is worth
+		 * exporting this functionality to a separate, package private class
+		 * (RuleCompiler) which will collect the Rules to be compiled in a Queue
+		 * and work on those until the queue is empty and the instruction list
+		 * in Machine contains the correct jump addresses for each rule call.
+		 * All these containers (the job queue and the two maps) can then be
+		 * freed after compilation.
 		 */
 	}
 }
