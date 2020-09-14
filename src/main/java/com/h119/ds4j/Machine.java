@@ -246,7 +246,7 @@ public class Machine {
 				case PRS:
 				{
 					int registerIndex = program.get(instructionPointer + 1);
-					stack.push(registers.get(registerIndex);
+					stack.push(registers.get(registerIndex));
 					instructionPointer += 2;
 				}
 				break;
